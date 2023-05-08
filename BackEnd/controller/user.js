@@ -36,4 +36,24 @@ exports.postSignUpUser = async (req, res, next) => {
     };
 }
 
+ exports.postLoginUser = async (req, res, next) =>{
+      const { email, password } = req.body;
+      try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+          return res.status(401).json({ error: 'Incorrect password' });
+        }
+        // console.log(res)
+        return res.status(200).json({token: generateToken(user.id)});
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+    };
+
+
 
