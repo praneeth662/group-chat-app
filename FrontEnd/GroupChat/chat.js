@@ -159,6 +159,68 @@ async function showUsers(user) {
     chatGroup.appendChild(li);
 }
 
+ function adminUser(user){
+  const li = document.createElement('li');
+  li.className= 'list-group-item'
+  li.setAttribute('id', user.id);
+  const textNode= `${user.name}`
+  li.appendChild(document.createTextNode(textNode));
+  li.style.color = 'black'
+  userli.push(li)
+  chatGroup.appendChild(li);
+  const removeButton = document.createElement('button');
+  removeButton.className = 'btn btn-danger';
+  removeButton.innerHTML = 'Remove';
 
+  removeButton.addEventListener('click', async(e) => {
+    try{
+      var li= e.target.parentElement;
+      const id = li.id;
+      const response = await axios.delete(`http://localhost:3000/user/delete/${id}/${currentGroupId}`,{
+        headers: {
+           "Authorization" : token 
+       }
+      })
+      // console.log(response)
+      window.location.reload()
+    }catch(err){
+      console.log(err)
+    }
+  });
+    li.appendChild(removeButton);
+    chatGroup.appendChild(li);
+}
+
+addUser.addEventListener('click', async() => {
+  try{
+    const mobile= {
+      mobile: mobileInput.value
+    }
+    const response = await axios.post(`http://localhost:3000/user/adduser/${currentGroupId}`, mobile,{
+      headers: {
+         "Authorization" : token 
+     }
+ })
+ window.location.reload()
+//  console.log(response)
+showUsers(response.data)
+  }catch(err){
+    console.log(err)
+  }
+});
+
+async function isAdmin(){
+  try{
+      const response = await axios.get(`http://localhost:3000/user/admin/${currentGroupId}`,{
+        headers: {
+           "Authorization" : token 
+       }
+      })
+      // console.log(response)
+      return response.status
+  }catch(err){
+    console.log(err)
+  }
+}
 
 
