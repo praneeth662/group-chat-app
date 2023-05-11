@@ -66,7 +66,7 @@ exports.getNewChat = async (req, res, next) => {
     console.log(err);
     res.status(500).json({ error: 'Error getting chat' });
   }
-};
+}
 
 
   
