@@ -83,6 +83,82 @@ async function chatRefresh(){
   }
 }
 
+async function addNewGroup(e){
+    e.preventDefault()
+    try{
+      const newgroup = {
+        name: groupName.value
+    }
+
+    const response = await axios.post(`http://localhost:3000/group/newgroup`, newgroup, {
+       headers: {
+        "Authorization" : token 
+      }
+      })
+    console.log(response)
+    showGroup(newgroup)
+    }catch(err){
+      console.log(err)
+    }
+   
+}
+
+async function sendChat(e){
+    e.preventDefault()
+    try{
+        const newChat = {
+            message: chatMsg.value
+        }
+        const response = await axios.post(`http://localhost:3000/chat/chats/${currentGroupId}`, newChat,{
+             headers: {
+                "Authorization" : token 
+            }
+        });
+        // console.log(groupId)
+        // console.log(response)
+        showchats(response.data )
+        // chatRefresh();
+        chatMsg.value ='';
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }catch (err){
+        console.log(err)
+    }
+    
+}
+
+async function showGroup(group) {
+  const linkTab = document.createElement('a');
+  linkTab.className = 'btn btn-primary btn-lg btn-block';
+  linkTab.setAttribute('data-group-id', group.id);
+  const textNode = document.createTextNode(group.name);
+  linkTab.appendChild(textNode);
+  chatGroup.appendChild(linkTab);
+}
+
+
+function showchats(chat) {
+  const li = document.createElement('li');
+  // console.log(chat)
+    li.className= 'list-group-item'
+    // li.setAttribute('id', chat.id);
+    const textNode= `${chat.user.name}:${chat.message}`
+    li.appendChild(document.createTextNode(textNode));
+    chatBox.appendChild(li);
+}
+
+
+
+async function showUsers(user) {
+    const li = document.createElement('li');
+    li.className= 'list-group-item'
+    li.setAttribute('id', user.id);
+    const textNode= `${user.name}`
+    li.appendChild(document.createTextNode(textNode));
+    li.style.color = 'black'
+    userli.push(li)
+    chatGroup.appendChild(li);
+}
+
 
 
 
