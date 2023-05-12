@@ -36,6 +36,10 @@ exports.postSignUpUser = async (req, res, next) => {
     };
 }
 
+function generateToken(id){
+    return jwt.sign({userId: id}, '9031278576pran159')
+  }
+
  exports.postLoginUser = async (req, res, next) =>{
       const { email, password } = req.body;
       try {
@@ -55,5 +59,65 @@ exports.postSignUpUser = async (req, res, next) => {
       }
     };
 
+exports.postAddUser = async (req, res, next) =>{
+  const groupId = req.params.groupId;
+  const mobile = req.body.mobile
+  try{
+    const user = await User.findOne({where:{mobile}})
+    const userId = user.id
+    if(user){
+      const userGroup = await UserGroups.create({
+        userId: userId,
+        groupId: groupId
+      })
+    
+     return res.status(200).json(userGroup)
+    }
+    res.status(401).json({message: "User not found"})
+  }catch(err){
+    console.log(err)
+  }
+}
 
+exports.deleteUser = async (req, res, next) => {
+  const userId = req.params.id;
+  const groupId = req.params.groupId;
+
+  try {
+    const numDeletedRows = await UserGroups.destroy({
+      where: {
+        userId: userId,
+        groupId: groupId
+      }
+    });
+
+    if (numDeletedRows > 0) {
+      res.status(200).json({
+        message: `User with id ${userId} has been removed from group with id ${groupId}`
+      });
+    } else {
+      res.status(404).json({
+        error: `User with id ${userId} is not a member of group with id ${groupId}`
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Error deleting user' });
+  }
+};
+
+exports.getAdmin = async(req, res, next)=>{
+  const userId = req.user.id
+  const groupId = req.params.groupId;
+  try{
+    const response = await Group.findOne({where:{id: groupId}});
+    // console.log(typeof userId)
+    if(parseInt(response.admin) === userId){
+     return res.status(200).json(response.admin)
+    }
+    res.status(201).json({message: "not admin"});
+  }catch(err){
+    console.log(err)
+  }
+}
 
